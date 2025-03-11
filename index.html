@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Recursos del Clúster Proxmox - Diagrama Sunburst D3.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Matomo -->
+  <script>
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//analytics.arreg.la/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '1']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <!-- End Matomo Code -->
+</head>
+<body>
+  <div class="logo-container">
+    <a href="https://ayuda.la" target="_blank">
+      <img src="https://assets.ayuda.la/web/logo-ayudala-1.png" alt="Ayuda.LA Logo">
+    </a>
+  </div>
+  
+  <div class="title">Explorador de recursos de Cluster Proxmox VE</div>
+  <div class="subtitle">Análisis de asignación de CPU, Memoria y Disco por nodo - <span id="date-display"></span></div>
+  
+   <!-- Añadir panel de instrucciones después del subtítulo -->
+   <div class="instructions-panel">
+    <div class="instructions-header" id="instructions-toggle">
+      <h3>Instrucciones de Uso</h3>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="instructions-content" id="instructions-content">
+      <h4>Cómo usar esta herramienta</h4>
+      <ul>
+        <li><strong>Cargar datos:</strong> Utilice el botón "Cargar archivo JSON" para subir un archivo con estadísticas de su clúster Proxmox. La aplicación intentará cargar automáticamente un archivo llamado "proxmox_stats.json" si existe.</li>
+        <li><strong>URL remota:</strong> Alternativamente, puede cargar datos desde una URL remota añadiendo el parámetro <code>?jsonUrl=https://ejemplo.com/ruta/al/archivo.json</code> a la URL de esta página.</li>
+        <li><strong>Generación del archivo JSON:</strong> Se genera con la utilidad que se encuentra en <a href="https://github.com/aweher/proxmox-prediction" target="_blank">este repositorio.</a>.</li>
+        <li><strong>Navegación del diagrama:</strong> El diagrama Sunburst muestra los recursos de su clúster en tres niveles:
+          <ul>
+            <li>Nivel 1 (interno): Los tipos de recursos (CPU, Memoria, Disco)</li>
+            <li>Nivel 2 (medio): Los nodos físicos del cluster Proxmox</li>
+            <li>Nivel 3 (externo): Las máquinas virtuales en ejecución en cada nodo</li>
+          </ul>
+        </li>
+        <li><strong>Interacción:</strong> Pase el cursor sobre cualquier segmento para ver información detallada. El color indica el nivel de utilización (más intenso = mayor utilización).</li>
+        <li><strong>Información emergente:</strong> La ruta de navegación aparece debajo del diagrama para ayudarle a identificar dónde está enfocado actualmente.</li>
+        <li><strong>Estadísticas generales:</strong> En la parte superior se muestran métricas resumidas de todo el clúster para una rápida evaluación.</li>
+      </ul>
+      <p><strong>Nota:</strong> Los segmentos rojos o con borde rojo indican recursos que están sobreutilizados (>100%) o que podrían requerir atención. Esta herramienta tiene en cuenta los recursoos comprometidos y no los utilizadoos.</p>
+    </div>
+  </div>
+  <!-- Agregar esta sección para cargar el archivo JSON -->
+  <div style="text-align: center; margin: 20px 0;">
+    <input type="file" id="json-upload" accept=".json" style="display: none;">
+    <button id="upload-button" style="padding: 8px 15px; background-color: #4a7bae; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Cargar archivo JSON
+    </button>
+    <span id="file-name" style="margin-left: 10px; font-size: 14px; color: #666;"></span>
+  </div>
+  
+  <div class="stats-container">
+    <div class="stat-box">
+      <div class="stat-title">Nodos</div>
+      <div class="stat-value" id="nodes-count">--</div>
+      <div class="stat-sub" id="nodes-active">-- activos</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-title">VMs</div>
+      <div class="stat-value" id="vms-count">--</div>
+      <div class="stat-sub" id="vms-running">-- en ejecución</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-title">CPU</div>
+      <div class="stat-value" id="cpu-usage">--</div>
+      <div class="stat-sub" id="cpu-overcommit">--% sobreasignación</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-title">Memoria</div>
+      <div class="stat-value" id="memory-usage">--</div>
+      <div class="stat-sub" id="memory-free">-- GB disponible</div>
+    </div>
+  </div>
+  <div id="chart"></div>
+  <div id="breadcrumb" class="breadcrumb"></div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #f4a4a4;"></div>
+      <div class="legend-label">CPU</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #a5c8e1;"></div>
+      <div class="legend-label">Memoria</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #a5d6c8;"></div>
+      <div class="legend-label">Disco</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(to right, #f5e6e6, #e68a8a);"></div>
+      <div class="legend-label">Utilización (Baja → Alta)</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #333333; opacity: 0.7;"></div>
+      <div class="legend-label">VMs en ejecución</div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

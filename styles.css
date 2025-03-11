@@ -1,0 +1,213 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  /* Logo container styles */
+  .logo-container {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .logo-container img {
+    max-height: 60px;
+    width: auto;
+  }
+  
+  #chart {
+    width: 900px;
+    height: 650px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .tooltip {
+    position: absolute;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 14px;
+    max-width: 250px;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  .tooltip h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+  
+  .tooltip p {
+    margin: 2px 0;
+  }
+  
+  .tooltip .critical {
+    color: #d37070;
+    font-weight: bold;
+  }
+  
+  .tooltip .warning {
+    color: #d3af70;
+    font-weight: bold;
+  }
+  
+  .tooltip .ok {
+    color: #70a286;
+    font-weight: bold;
+  }
+  
+  .legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+  }
+  
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    border: 1px solid #666;
+  }
+  
+  .legend-label {
+    font-size: 14px;
+  }
+  
+  .text-small {
+    font-size: 12px;
+  }
+  
+  .breadcrumb {
+    text-align: center;
+    margin-top: 15px;
+    height: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .central-text {
+    font-size: 14px;
+    fill: #333;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  
+  .vm-arc {
+    transition: opacity 0.2s;
+  }
+  
+  .vm-arc:hover {
+    opacity: 0.8;
+  }
+  
+  .stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px auto;
+    max-width: 800px;
+    flex-wrap: wrap;
+  }
+  
+  .stat-box {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    text-align: center;
+    width: 23%;
+    margin-bottom: 15px;
+  }
+  
+  .stat-title {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .stat-sub {
+    font-size: 12px;
+    color: #777;
+    margin-top: 5px;
+  }
+  
+  /* Estilos para el panel de instrucciones */
+  .instructions-panel {
+    max-width: 800px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .instructions-header {
+    background-color: #4a7bae;
+    color: white;
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .instructions-header h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+  
+  .instructions-content {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+  }
+  
+  .instructions-content.active {
+    max-height: 800px;
+    padding: 20px;
+  }
+  
+  .instructions-content ul {
+    padding-left: 25px;
+  }
+  
+  .instructions-content li {
+    margin-bottom: 10px;
+  }
+  
+  .chevron {
+    transition: transform 0.3s;
+  }
+  
+  .chevron.active {
+    transform: rotate(180deg);
+  }
+  
